@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6n8v2gqlotpj"]
+
+[ext_resource type="PackedScene" uid="uid://cmjbjhjmw36au" path="res://Cards/card_content.tscn" id="2_2wfqx"]
+
+[node name="DefuseCard" type="MarginContainer"]
+offset_left = -125.0
+offset_top = -175.0
+offset_right = 125.0
+offset_bottom = 175.0
+pivot_offset = Vector2(125, 175)
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 2
+color = Color(0, 0.709804, 0.501961, 1)
+
+[node name="CardContent" parent="." node_paths=PackedStringArray("card") instance=ExtResource("2_2wfqx")]
+layout_mode = 2
+card = NodePath("..")

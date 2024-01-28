@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CardStats" load_steps=2 format=3 uid="uid://fgbgboam2ukc"]
+
+[ext_resource type="Script" path="res://Cards/card_stats.gd" id="1_3cqjg"]
+
+[resource]
+script = ExtResource("1_3cqjg")
+flavor_text = "via participation in kitten yoga"
+type = 1
+card_art = ""

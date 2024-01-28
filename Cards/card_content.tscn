@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmjbjhjmw36au"]
+
+[ext_resource type="Script" path="res://Cards/card_content.gd" id="1_50k64"]
+
+[node name="CardContent" type="VBoxContainer"]
+script = ExtResource("1_50k64")
+
+[node name="TopGap" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LeftGap" type="MarginContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+
+[node name="FlavorBox" type="VBoxContainer" parent="TopBar"]
+layout_mode = 2
+
+[node name="CardTitleTop" type="Label" parent="TopBar/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="TopBar/FlavorBox"]
+layout_mode = 2
+
+[node name="FlavorText" type="Label" parent="TopBar/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="MidGap" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LeftGap" type="MarginContainer" parent="BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CardTitleBottom" type="Label" parent="BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RightGap" type="MarginContainer" parent="BottomBar"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+
+[node name="BottomGap" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_top = 20
