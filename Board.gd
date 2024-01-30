@@ -1,42 +1,28 @@
-extends Node2D
+extends Control
 
-var defuse_card_scene: PackedScene = preload("res://Cards/Defuse/DefuseCard.tscn")
+var base_card_scene: PackedScene = preload("res://Cards/base_card.tscn")
 var deck: Array[Card]
 var player_hand: Array[Card]
 
-const CardSize = Vector2(125,175)
+@onready var hand: Node2D = $Hand
+@onready var deck_box: Node2D = $Deck
 
-@onready var hand: Node = $Hand
-@onready var CentreCardOval = Vector2(get_viewport().size) * Vector2(0.5, 1.25)
-@onready var Hor_rad = get_viewport().size.x*0.45
-@onready var Ver_rad = get_viewport().size.y*0.4
-var angle = deg_to_rad(90) - 0.55
-var OvalAngleVector = Vector2()
-var spread_curve = preload("res://UI/resources/spread_curve.tres") as Curve
-var height_curve = preload("res://UI/resources/height_curve.tres") as Curve
-const angle_curve := preload("res://UI/resources/angle_curve.tres") as Curve
+const ANGLE_CURVE = preload("res://UI/Resources/angle_curve.tres") as Curve
+const SPREAD_CURVE = preload("res://UI/Resources/spread_curve.tres") as Curve
+const HEIGHT_CURVE = preload("res://UI/Resources/height_curve.tres") as Curve
 
-@export var card_spread_x:float = 2.0
-@export var card_spread_y:float = 1.0
-@export var card_speed:float = 100.0
-@export var card_spread_angle:float = 1.0
+const CARD_SIZE := Vector2(125, 175)
+const SCREEN_EDGE_BORDER = 125.0
+const MAX_DIST_BETWEEN_HAND_CARDS = 235.0 / 2
+var separation := 1.0/deck.size()
+var offset = 0
+var rotate_offset = -10.5
 
 func _ready() -> void:
 	_create_deck()
-	var i = 0
 	for card in deck:
-		pass
+		deck_box.add_child(card)
 
-func _process(delta:float) -> void:
-	var card_count := deck.size()
-	var separation := 1.0/card_count
-	var offset := separation * 0.5
-	for index in card_count:
-		var card := deck[index] as Card
-		var hand_ratio := index * separation + offset
-		var destination := _compute_destination(hand_ratio)
-		_move_card(card, destination, delta)
-		
 func _create_deck() -> void:
 	var path = "res://Cards/Defuse/Resources/"
 	var dir = DirAccess.open(path)
@@ -45,7 +31,7 @@ func _create_deck() -> void:
 		var file_name = dir.get_next()
 		while file_name != "":
 			if not dir.current_is_dir():
-				_load_card(path + file_name, defuse_card_scene)
+				_load_card(path + file_name, base_card_scene)
 				
 			file_name = dir.get_next()
 
@@ -53,62 +39,82 @@ func _load_card(path: String, scene: PackedScene) -> void:
 	var card: Card = scene.instantiate() as Card
 	card.card_stats = load(path)
 	deck.append(card)
-
-func deck_ratio_calc(card, index):
-	var deck_ratio = 0.5
-	if deck.size() > 1:
-		deck_ratio = float(index) / float(deck.size() - 1)
-		print(deck_ratio)
-		
-func card_rotation_method(card: Card):
-	OvalAngleVector = Vector2(Hor_rad * cos(angle), - Ver_rad * sin(angle))
-	var target_position = CentreCardOval + OvalAngleVector - card.size/2
-	var target_scale = card.scale * CardSize/card.size
-	hand.add_child(card)
-	var tween = get_tree().create_tween()
-	tween.tween_property(card, "scale", target_scale, 0.5)
-	tween.tween_property(card, "position", target_position, 0.5)
 	
+	var card_again: Card = scene.instantiate() as Card
+	card_again.card_stats = load(path)
+	deck.append(card_again)
 
-	angle += 0.25
+func deck_ratio_calc(card:Card) -> float:
+	var deck_ratio := 0.50
+	if hand.get_child_count() > 1:
+		deck_ratio = float(card.get_index()) / float(hand.get_child_count() - 1.0)
 
-func _compute_destination(hand_ratio:float) -> Transform2D:
-	# Compute displacement:
-	var displacement := Vector2(
-		spread_curve.sample(hand_ratio) * card_spread_x,
-		height_curve.sample(hand_ratio) * card_spread_y
-	)
+	return deck_ratio
 
-	# Compute rotation
-	var rotation = angle_curve.sample(hand_ratio) * card_spread_angle
+func draw_hand():
+	print("\n")
+	var separation = 42.5 * hand.get_child_count()
+	var max = get_viewport_rect().size - CARD_SIZE
+	
+	for card in hand.get_children():
+		var hand_ratio = deck_ratio_calc(card)
+		var destination := hand.global_position
+		
+		destination.x += SPREAD_CURVE.sample(hand_ratio)  * separation
+		
+		card.global_position = destination 
 
-	# Decompose the hand transform in position and rotation
-	var pos := global_transform.origin
-	var rot := global_transform.get_rotation()
 
-	# Update position and rotation:
-	pos += displacement
-	rot += rotation
+func draw_card():
+	if deck.size() > 0:
+		var card: Card = deck.pick_random()
+		deck.erase(card)
+		player_hand.append(card)
+		card.reparent(hand)
+		update_hand_position()
 
-	# Compose the result
-	return Transform2D(rot, pos)
+func my_draw_card():
+	if deck.size() > 0:
+		var card: Card = deck.pick_random()
+		deck.erase(card)
+		card.reparent(hand)
+		var curve = SPREAD_CURVE.sample(deck_ratio_calc(card))
+		
+		var tween = get_tree().create_tween()
+		tween.tween_property(card, "rotation", deg_to_rad(rotate_offset), 0.5)
+		tween.tween_property(card, "position", Vector2(0 + offset, -70), 0.5)
+		
+		offset += 125
+		rotate_offset += 5.5
 
-func get_approach_factor(time:float, delta:float) -> float:
-	const EPSILON := 0.00001
-	const SCALE := 1000.0
-	if is_nan(time) or time == INF:
-		return 0.0
+func update_hand_position():
+	var current_hand_size = player_hand.size()
+	var viewport_size = get_viewport_rect().size
+	var horizontal_space = viewport_size.x  - SCREEN_EDGE_BORDER - SCREEN_EDGE_BORDER - CARD_SIZE.x
+	var dist_between_cards = min(horizontal_space / current_hand_size, MAX_DIST_BETWEEN_HAND_CARDS * 2)
+	var card_x = ((viewport_size.x + (dist_between_cards * (current_hand_size))) * 0.5) - (dist_between_cards * 0.5)
 
-	if time < EPSILON / SCALE:
-		return 1.0
+	var separation = 0.5
+	if current_hand_size <= 2:
+		separation = 0.1
+	if current_hand_size >= 3 && current_hand_size <= 5:
+		separation = 0.3
 
-	var base := pow(EPSILON, 1.0 / (time * SCALE))
-	return 1.0 - pow(base, delta * SCALE)
-
-func _move_card(card:Card, destination:Transform2D, delta:float) -> void:
-	var time = 1.0 
-	# Get the approach factor
-	var factor := get_approach_factor(time, delta)
-
-	# Interpolate the transforms
-	card.global_transform = card.global_transform.interpolate_with(destination, factor)
+	for card in hand.get_children():
+		var half_viewport_x = viewport_size.x * 0.5 
+		var destination := hand.global_position
+		var hand_ratio = deck_ratio_calc(card)
+		
+		destination.x += card_x * SPREAD_CURVE.sample(hand_ratio) * separation
+		destination.y += HEIGHT_CURVE.sample(hand_ratio) * -1 * 20
+		
+		var target_rotation = ANGLE_CURVE.sample(hand_ratio) * 0.1
+		
+		card.rotation = -target_rotation
+		
+		var tween = get_tree().create_tween()
+		tween.tween_property(card, "global_position", destination, 0.5)
+		tween.tween_property(card, "rotation", -target_rotation, 0.5)
+		
+func _on_button_pressed() -> void:
+	draw_card()

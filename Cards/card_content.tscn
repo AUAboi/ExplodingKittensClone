@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmjbjhjmw36au"]
+[gd_scene load_steps=2 format=3 uid="uid://cjrseegtuht3r"]
 
-[ext_resource type="Script" path="res://Cards/card_content.gd" id="1_50k64"]
+[ext_resource type="Script" path="res://Cards/card_content.gd" id="1_3qywj"]
 
 [node name="CardContent" type="VBoxContainer"]
-script = ExtResource("1_50k64")
+script = ExtResource("1_3qywj")
 
 [node name="TopGap" type="MarginContainer" parent="."]
 layout_mode = 2
