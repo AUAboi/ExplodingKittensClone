@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CardStats" load_steps=2 format=3 uid="uid://gmavrucvl0it"]
+
+[ext_resource type="Script" path="res://Cards/card_stats.gd" id="1_d6gbt"]
+
+[resource]
+script = ExtResource("1_d6gbt")
+flavor_text = "via catnip sandwiches"
+type = 1
+card_art = ""

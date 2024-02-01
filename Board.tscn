@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://rfybcn2mrgrt"]
+[gd_scene load_steps=3 format=3 uid="uid://rfybcn2mrgrt"]
 
-[ext_resource type="Script" path="res://Board.gd" id="1_itho8"]
+[ext_resource type="Script" path="res://board.gd" id="1_itho8"]
+[ext_resource type="Script" path="res://Cards/card_manager.gd" id="2_44kgi"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -17,11 +18,11 @@ offset_right = 1146.0
 offset_bottom = 649.0
 color = Color(0.462745, 0.462745, 0.462745, 1)
 
+[node name="Deck" type="Node2D" parent="."]
+position = Vector2(960, 136)
+
 [node name="Hand" type="Node2D" parent="."]
 position = Vector2(576, 576)
-
-[node name="Deck" type="Node2D" parent="."]
-position = Vector2(576, 328)
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
@@ -29,5 +30,10 @@ offset_right = 8.0
 offset_bottom = 8.0
 text = "Draw
 "
+
+[node name="CardManager" type="Node2D" parent="." node_paths=PackedStringArray("hand", "deck")]
+script = ExtResource("2_44kgi")
+hand = NodePath("../Hand")
+deck = NodePath("../Deck")
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

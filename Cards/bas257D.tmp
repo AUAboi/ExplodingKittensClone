@@ -1,59 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://c2ukeqqxgcjd6"]
+[gd_scene load_steps=3 format=3 uid="uid://c2ukeqqxgcjd6"]
 
 [ext_resource type="Script" path="res://Cards/card.gd" id="1_p1puu"]
-[ext_resource type="Texture2D" uid="uid://dxse4d5ap5lhc" path="res://Globals/attack1.png" id="2_mhx33"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e2l34"]
 size = Vector2(250, 350)
-
-[sub_resource type="Animation" id="Animation_wqhty"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Control/Sprite2D:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-
-[sub_resource type="Animation" id="Animation_ggsho"]
-resource_name = "flip"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Control:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector2(1, 1), Vector2(0.01, 1), Vector2(1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Control/Sprite2D:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_pwr01"]
-_data = {
-"RESET": SubResource("Animation_wqhty"),
-"flip": SubResource("Animation_ggsho")
-}
 
 [node name="BaseCard" type="Area2D"]
 scale = Vector2(0.5, 0.5)
@@ -142,16 +92,6 @@ layout_mode = 2
 [node name="CardTitleBottom" type="Label" parent="Control/MarginContainer/VBoxContainer2/HBoxContainer/FlavorBox"]
 unique_name_in_owner = true
 layout_mode = 2
-
-[node name="Sprite2D" type="Sprite2D" parent="Control"]
-position = Vector2(124.625, 177)
-scale = Vector2(0.932657, 1.09877)
-texture = ExtResource("2_mhx33")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_pwr01")
-}
 
 [connection signal="mouse_entered" from="Control" to="." method="_on_control_mouse_entered"]
 [connection signal="mouse_exited" from="Control" to="." method="_on_control_mouse_exited"]
