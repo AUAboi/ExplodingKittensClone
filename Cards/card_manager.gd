@@ -17,6 +17,8 @@ const CARD_SIZE := Vector2(125, 175)
 const SCREEN_EDGE_BORDER = 125.0
 const MAX_DIST_BETWEEN_HAND_CARDS = 235.0 / 2
 
+const CARD_HOVER_X_OFFSET: int = 20
+
 func _ready() -> void:
 	_create_deck()
 	deck_list.shuffle()
@@ -100,34 +102,57 @@ func _on_tween_finished(card: Card)->void:
 	card.update_positions() 
 
 func _on_card_hover(card: Card) -> void:
+	#Get 2 cards before and 2 cards after hovered card for effect
 	var card_index := card.get_index()
-	var card_before_index := card_index - 1
-	var card_after_index := card_index + 1
+	
 	var cards_in_hand := hand.get_children()
 	
+	var card_before_index_start: int = max(0, card_index - 2)
+	var card_before_index_end: int =  min(card_index - 1, cards_in_hand.size() - 1)
 	
-	if card_before_index >= 0:
-		var tilt_left_position: Vector2 = cards_in_hand[card_before_index].original_position
-		var tween_left = get_tree().create_tween()
+	var card_after_index_start: int = max(0, card_index + 1)
+	var card_after_index_end: int = min(card_index + 2, cards_in_hand.size() - 1)
 	
-		tilt_left_position.x -= 20
-		tween_left.tween_property(cards_in_hand[card_before_index], "global_position", tilt_left_position, 0.1)
+	if card_before_index_start <= card_before_index_end:
+		for i in range(card_before_index_start, card_before_index_end + 1):
+			var card_before: Card = cards_in_hand[i]
+			
+			var tilt_left_position: Vector2 = card_before.original_position
+			var tween_left = get_tree().create_tween().set_parallel(true)
+			
+			tilt_left_position.x -= CARD_HOVER_X_OFFSET
+			tween_left.tween_property(card_before, "global_position", tilt_left_position, 0.1)
 	
-	if card_after_index <= hand.get_child_count() - 1:
-		var tween_right = get_tree().create_tween()
-		var tilt_right_position: Vector2 = cards_in_hand[card_after_index].original_position
-		tilt_right_position.x += 20
-		tween_right.tween_property(cards_in_hand[card_after_index], "global_position", tilt_right_position, 0.1)
+	if card_after_index_start <= card_after_index_end:
+		for i in range(card_after_index_start, card_after_index_end + 1):
+			var card_after: Card = cards_in_hand[i]
+			
+			var tween_right = get_tree().create_tween()
+			var tilt_right_position: Vector2 = card_after.original_position
+			
+			tilt_right_position.x += CARD_HOVER_X_OFFSET
+			
+			tween_right.tween_property(card_after, "global_position", tilt_right_position, 0.1)
 
 func _on_card_unhovered(card: Card) -> void:
+	#Get 2 cards before and 2 cards after hovered card for effect
 	var card_index := card.get_index()
-	var card_before_index := card_index - 1
-	var card_after_index := card_index + 1
+	
 	var cards_in_hand := hand.get_children()
 	
-	if card_before_index >= 0:
-		cards_in_hand[card_before_index].set_original_card_state()
+	var card_before_index_start: int = max(0, card_index - 2)
+	var card_before_index_end: int =  min(card_index - 1, cards_in_hand.size() - 1)
 	
-	if card_after_index <= hand.get_child_count() - 1:
-		cards_in_hand[card_after_index].set_original_card_state()
+	var card_after_index_start: int = max(0, card_index + 1)
+	var card_after_index_end: int = min(card_index + 2, cards_in_hand.size() - 1)
+	
+	if card_before_index_start <= card_before_index_end:
+		for i in range(card_before_index_start, card_before_index_end + 1):
+			var card_before: Card = cards_in_hand[i]
+			card_before.set_original_card_state()
+	
+	if card_after_index_start <= card_after_index_end:
+		for i in range(card_after_index_start, card_after_index_end + 1):
+			var card_after: Card = cards_in_hand[i]
+			card_after.set_original_card_state()
 

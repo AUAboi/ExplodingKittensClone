@@ -14,6 +14,8 @@ var original_rotation := rotation
 var card_title: String
 var hoverable: bool = false
 
+const CARD_HOVER_Y_OFFSET: int = 40
+
 signal card_hovered(card:Card)
 signal card_unhovered(card:Card)
 
@@ -35,14 +37,23 @@ func _get_card_title() -> String:
 
 func _on_control_mouse_entered() -> void:
 	if hoverable:
+		#Emitting so we can launch side effects like moving neighbouring cards
 		card_hovered.emit(self)
-		var new_position = global_position - Vector2(0, 20)
 		
+		#Parent is always going to be the base Y offset where we need to modify the position
+		#TODO 
+		#Change it to be more cleaner later
+		var hand: Node2D = get_parent()
+		
+		var new_position = Vector2(global_position.x, hand.global_position.y - CARD_HOVER_Y_OFFSET)
 		var tween = get_tree().create_tween().set_parallel(true)
 		tween.tween_property(self, "global_position", new_position, 0.1)
 		tween.tween_property(self, "rotation", 0, 0.1)
-		tween.tween_property(self, "scale", Vector2(0.6, 0.6), 0.1)
+		
+		scale = Vector2(0.6, 0.6)
 		z_index = 1
+		
+		
 
 func _on_control_mouse_exited() -> void:
 	if hoverable:
@@ -53,7 +64,8 @@ func set_original_card_state():
 	var tween = get_tree().create_tween().set_parallel(true)
 	tween.tween_property(self, "global_position", original_position, 0.1)
 	tween.tween_property(self, "rotation", original_rotation, 0.1)
-	tween.tween_property(self, "scale", Vector2(0.5, 0.5), 0.1)
+	scale = Vector2(0.5, 0.5)
+	
 	z_index = 0
 
 func update_positions():
@@ -63,3 +75,7 @@ func update_positions():
 
 func flip() -> void:
 	animation_player.play("flip")
+
+
+func _on_mouse_entered() -> void:
+	print("entered :P")
