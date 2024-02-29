@@ -1,12 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://rfybcn2mrgrt"]
+[gd_scene load_steps=4 format=3 uid="uid://rfybcn2mrgrt"]
 
 [ext_resource type="Script" path="res://board.gd" id="1_itho8"]
 [ext_resource type="Script" path="res://Cards/card_manager.gd" id="2_44kgi"]
 [ext_resource type="PackedScene" uid="uid://bnek80aiq3pev" path="res://Game/game_manager.tscn" id="3_2y6gq"]
-[ext_resource type="PackedScene" uid="uid://cy2w0p672qt5y" path="res://UI/droppable.tscn" id="4_4jrl8"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_u1rwp"]
-size = Vector2(128, 176)
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -51,29 +47,7 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_top = -68.0
-offset_bottom = -68.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Droppable" parent="DiscardPile" instance=ExtResource("4_4jrl8")]
-
-[node name="ColorRect" parent="DiscardPile/Droppable" index="0"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -62.5
-offset_top = -87.0
-offset_right = 62.5
-offset_bottom = 88.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(125, 175)
-size_flags_vertical = 6
-
-[node name="CollisionShape2D" parent="DiscardPile/Droppable" index="1"]
-shape = SubResource("RectangleShape2D_u1rwp")
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-
-[editable path="DiscardPile/Droppable"]

@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://c2ukeqqxgcjd6"]
+[gd_scene load_steps=8 format=3 uid="uid://c2ukeqqxgcjd6"]
 
 [ext_resource type="Script" path="res://Cards/card.gd" id="1_p1puu"]
 [ext_resource type="Texture2D" uid="uid://dxse4d5ap5lhc" path="res://Globals/attack1.png" id="2_mhx33"]
-[ext_resource type="PackedScene" uid="uid://cdey26bmr578t" path="res://Cards/card_layout.tscn" id="2_ynfjv"]
 [ext_resource type="PackedScene" uid="uid://batha7mw2ehdo" path="res://UI/draggable.tscn" id="3_e2mhe"]
 
 [sub_resource type="Animation" id="Animation_wqhty"]
@@ -57,14 +56,80 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rwp4b"]
 size = Vector2(252, 350)
 
-[node name="BaseCard" type="Control"]
+[node name="BaseCard" type="Control" node_paths=PackedStringArray("card_layout")]
 layout_mode = 3
 anchors_preset = 0
 scale = Vector2(0.5, 0.5)
 mouse_filter = 1
 script = ExtResource("1_p1puu")
+card_layout = NodePath("CardLayout")
 
-[node name="CardLayout" parent="." instance=ExtResource("2_ynfjv")]
+[node name="CardLayout" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -125.0
+offset_top = -175.0
+offset_right = 125.0
+offset_bottom = 175.0
+pivot_offset = Vector2(125, 175)
+mouse_filter = 1
+metadata/_edit_lock_ = true
+
+[node name="Panel" type="Panel" parent="CardLayout"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CardLayout"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CardLayout/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CardLayout/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FlavorBox" type="VBoxContainer" parent="CardLayout/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="CardTitleTop" type="Label" parent="CardLayout/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CardLayout/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+layout_mode = 2
+
+[node name="FlavorText" type="Label" parent="CardLayout/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CardLayout/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CardLayout/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="FlavorBox" type="VBoxContainer" parent="CardLayout/MarginContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+
+[node name="CardTitleBottom" type="Label" parent="CardLayout/MarginContainer/VBoxContainer2/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -80,6 +145,8 @@ texture = ExtResource("2_mhx33")
 actor = NodePath("..")
 
 [node name="CollisionShape2D" parent="Draggable" index="0"]
+visible = false
+position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_rwp4b")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

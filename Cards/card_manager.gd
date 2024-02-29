@@ -8,6 +8,7 @@ var player_hand: Array[Card]
 
 @export var hand: Node2D
 @export var deck: Node2D
+@export var discard_pile: Control
 
 const ANGLE_CURVE = preload("res://UI/Resources/angle_curve.tres") as Curve
 const SPREAD_CURVE = preload("res://UI/Resources/spread_curve.tres") as Curve
@@ -27,11 +28,11 @@ func _ready() -> void:
 		card.scale = Vector2(0.35, 0.35)
 
 func _create_deck() -> void:
-	var path = "res://Cards/Defuse/Resources/"
-	var dir = DirAccess.open(path)
+	var path := "res://Cards/Defuse/Resources/"
+	var dir := DirAccess.open(path)
 	if dir:
 		dir.list_dir_begin()
-		var file_name = dir.get_next()
+		var file_name := dir.get_next()
 		while file_name != "":
 			if not dir.current_is_dir():
 				_load_card(path + file_name, base_card_scene)
@@ -41,37 +42,50 @@ func _create_deck() -> void:
 func _load_card(path: String, scene: PackedScene) -> void:
 	var card: Card = scene.instantiate() as Card
 	card.card_stats = load(path)
-	
+	_load_card_effect(card)
 	deck_list.append(card)
+
+func _load_card_effect(card: Card) -> void:
+	#Load every card's effect and do required assignments :/
+	#TODO:
+	#Make this better somehow and prevent individual loading
+	#And PLEASE CLEAN THIS UP WITH :peace: and :love:
+	var card_type: String = Constants.CardTypes.keys()[card.card_stats.type]
+	var effect_path: String = "res://Cards/" + card_type.to_lower().capitalize() + "/" + card_type.to_lower() + "_effect.gd"
+	
+	if ResourceLoader.exists(effect_path):
+		var effect: Resource = load(effect_path)
+		var effect_scene: CardEffect = effect.new()
+		card.add_child(effect_scene)
+		effect_scene.actor = card
+		card.card_effect = effect_scene
 
 func _deck_ratio_calc(card:Card) -> float:
 	var deck_ratio := 0.50
 	if hand.get_child_count() > 1:
 		deck_ratio = float(card.get_index()) / float(hand.get_child_count() - 1.0)
-
+	
 	return deck_ratio
 
 func draw_card() -> void:
 	if deck_list.size() > 0:
 		var card: Card = deck_list.pop_back()
-		card.flip()
-		
 		card.card_hovered.connect(_on_card_hover)
 		card.card_unhovered.connect(_on_card_unhovered)
-		
+		card.card_discarded.connect(_on_card_discarded)
 		player_hand.append(card)
 		card.reparent(hand)
-		
 		_update_hand_position()
+		card.draw()
 
 func _update_hand_position() -> void:
-	var current_hand_size = player_hand.size()
-	var viewport_size = get_viewport_rect().size
-	var horizontal_space = viewport_size.x  - SCREEN_EDGE_BORDER - SCREEN_EDGE_BORDER - CARD_SIZE.x
-	var dist_between_cards = min(horizontal_space / current_hand_size, MAX_DIST_BETWEEN_HAND_CARDS * 2)
-	var card_x = ((viewport_size.x + (dist_between_cards * (current_hand_size))) * 0.5) - (dist_between_cards * 0.5)
+	var current_hand_size := player_hand.size()
+	var viewport_size := get_viewport_rect().size
+	var horizontal_space := viewport_size.x  - SCREEN_EDGE_BORDER - SCREEN_EDGE_BORDER - CARD_SIZE.x
+	var dist_between_cards: float = min(horizontal_space / current_hand_size, MAX_DIST_BETWEEN_HAND_CARDS * 2)
+	var card_x := ((viewport_size.x + (dist_between_cards * (current_hand_size))) * 0.5) - (dist_between_cards * 0.5)
 
-	var separation = 0.3
+	var separation := 0.3
 	if current_hand_size <= 3:
 		separation = 0.1
 	if current_hand_size >= 4 && current_hand_size <= 6:
@@ -81,16 +95,16 @@ func _update_hand_position() -> void:
 		card.hoverable = false
 		
 		var destination := hand.global_position
-		var hand_ratio = _deck_ratio_calc(card)
+		var hand_ratio := _deck_ratio_calc(card)
 		
 		destination.x += card_x * SPREAD_CURVE.sample(hand_ratio) * separation
 		destination.y += HEIGHT_CURVE.sample(hand_ratio) * -1 * 20
 		
-		var target_rotation = ANGLE_CURVE.sample(hand_ratio) * 0.1
+		var target_rotation := ANGLE_CURVE.sample(hand_ratio) * 0.1
 		
 		card.rotation = -target_rotation
 		
-		var tween = get_tree().create_tween().set_parallel(true)  
+		var tween := get_tree().create_tween().set_parallel(true)  
 
 		tween.tween_property(card, "global_position", destination, 0.5)
 		tween.tween_property(card, "rotation", -target_rotation, 0.5)
@@ -118,7 +132,7 @@ func _on_card_hover(card: Card) -> void:
 			var card_before: Card = cards_in_hand[i]
 			
 			var tilt_left_position: Vector2 = card_before.original_position
-			var tween_left = get_tree().create_tween().set_parallel(true)
+			var tween_left := get_tree().create_tween().set_parallel(true)
 			
 			tilt_left_position.x -= CARD_HOVER_X_OFFSET
 			tween_left.tween_property(card_before, "global_position", tilt_left_position, 0.1)
@@ -127,7 +141,7 @@ func _on_card_hover(card: Card) -> void:
 		for i in range(card_after_index_start, card_after_index_end + 1):
 			var card_after: Card = cards_in_hand[i]
 			
-			var tween_right = get_tree().create_tween()
+			var tween_right := get_tree().create_tween()
 			var tilt_right_position: Vector2 = card_after.original_position
 			
 			tilt_right_position.x += CARD_HOVER_X_OFFSET
@@ -156,3 +170,10 @@ func _on_card_unhovered(card: Card) -> void:
 			var card_after: Card = cards_in_hand[i]
 			card_after.set_original_card_state()
 
+func _on_card_discarded(card: Card) -> void:
+	card.hoverable = false
+	card.reparent(discard_pile)
+	player_hand.erase(card)
+	var tween := get_tree().create_tween()
+	tween.tween_property(card, "global_position", discard_pile.global_position, 0.25)
+	_update_hand_position()

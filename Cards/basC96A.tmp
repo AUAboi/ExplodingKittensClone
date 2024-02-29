@@ -1,0 +1,169 @@
+[gd_scene load_steps=8 format=3 uid="uid://c2ukeqqxgcjd6"]
+
+[ext_resource type="Script" path="res://Cards/card.gd" id="1_p1puu"]
+[ext_resource type="Texture2D" uid="uid://dxse4d5ap5lhc" path="res://Globals/attack1.png" id="2_mhx33"]
+[ext_resource type="PackedScene" uid="uid://batha7mw2ehdo" path="res://UI/draggable.tscn" id="3_e2mhe"]
+
+[sub_resource type="Animation" id="Animation_wqhty"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CardInner/Sprite2D:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ggsho"]
+resource_name = "flip"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CardInner:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.01, 1), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CardInner/Sprite2D:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pwr01"]
+_data = {
+"RESET": SubResource("Animation_wqhty"),
+"flip": SubResource("Animation_ggsho")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rwp4b"]
+size = Vector2(252, 350)
+
+[node name="BaseCard" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+scale = Vector2(0.5, 0.5)
+mouse_filter = 1
+script = ExtResource("1_p1puu")
+
+[node name="CardInner" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -125.0
+offset_top = -175.0
+offset_right = 125.0
+offset_bottom = 175.0
+pivot_offset = Vector2(125, 175)
+mouse_filter = 1
+metadata/_edit_lock_ = true
+
+[node name="ColorRect2" type="ColorRect" parent="CardInner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 1)
+
+[node name="ColorRect" type="ColorRect" parent="CardInner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.709804, 0.501961, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CardInner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CardInner/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CardInner/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FlavorBox" type="VBoxContainer" parent="CardInner/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="CardTitleTop" type="Label" parent="CardInner/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CardInner/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+layout_mode = 2
+
+[node name="FlavorText" type="Label" parent="CardInner/MarginContainer/VBoxContainer/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CardInner/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CardInner/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="FlavorBox" type="VBoxContainer" parent="CardInner/MarginContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+
+[node name="CardTitleBottom" type="Label" parent="CardInner/MarginContainer/VBoxContainer2/HBoxContainer/FlavorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="CardInner"]
+position = Vector2(124.625, 177)
+scale = Vector2(0.932657, 1.09877)
+texture = ExtResource("2_mhx33")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_pwr01")
+}
+
+[node name="Draggable" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("3_e2mhe")]
+actor = NodePath("..")
+
+[node name="CollisionShape2D" parent="Draggable" index="0"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_rwp4b")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="draggable_released" from="Draggable" to="." method="_on_draggable_draggable_released"]
+
+[editable path="Draggable"]

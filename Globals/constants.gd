@@ -5,3 +5,4 @@ enum CardTypes {
 	DEFUSE,
 	ATTACK
 }
+
