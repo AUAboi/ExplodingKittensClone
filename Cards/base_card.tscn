@@ -1,11 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://c2ukeqqxgcjd6"]
+[gd_scene load_steps=9 format=3 uid="uid://c2ukeqqxgcjd6"]
 
 [ext_resource type="Script" path="res://Cards/card.gd" id="1_p1puu"]
 [ext_resource type="Texture2D" uid="uid://dxse4d5ap5lhc" path="res://Globals/attack1.png" id="2_mhx33"]
 [ext_resource type="PackedScene" uid="uid://cdey26bmr578t" path="res://Cards/card_layout.tscn" id="2_ynfjv"]
 [ext_resource type="PackedScene" uid="uid://batha7mw2ehdo" path="res://UI/draggable.tscn" id="3_e2mhe"]
-[ext_resource type="Script" path="res://Common/state_machine.gd" id="5_0axvs"]
-[ext_resource type="Script" path="res://Common/state.gd" id="6_0peuh"]
 
 [sub_resource type="Animation" id="Animation_wqhty"]
 length = 0.001
@@ -83,12 +81,6 @@ actor = NodePath("..")
 
 [node name="CollisionShape2D" parent="Draggable" index="0"]
 shape = SubResource("RectangleShape2D_rwp4b")
-
-[node name="StateMachine" type="Node" parent="."]
-script = ExtResource("5_0axvs")
-
-[node name="State" type="Node" parent="StateMachine"]
-script = ExtResource("6_0peuh")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

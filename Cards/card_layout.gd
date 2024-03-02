@@ -9,6 +9,7 @@ class_name CardLayout
 @onready var card_title_bottom: Label = %CardTitleBottom
 @onready var panel: Panel = $Panel
 
+
 func _ready() -> void:
 	#Card layout will always belong to Card
 	actor = owner as Card
@@ -19,6 +20,8 @@ func _ready() -> void:
 	flavor_text_label.text = actor.card_stats.flavor_text
 	
 	set_card_styles()
+	
+	
 
 func _get_card_title() -> String:
 	match actor.card_stats.type:

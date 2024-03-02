@@ -20,6 +20,8 @@ const MAX_DIST_BETWEEN_HAND_CARDS = 235.0 / 2
 
 const CARD_HOVER_X_OFFSET: int = 20
 
+
+
 func _ready() -> void:
 	_create_deck()
 	deck_list.shuffle()
@@ -174,6 +176,7 @@ func _on_card_discarded(card: Card) -> void:
 	card.hoverable = false
 	card.reparent(discard_pile)
 	player_hand.erase(card)
-	var tween := get_tree().create_tween()
+	var tween := get_tree().create_tween().set_parallel(true)  
 	tween.tween_property(card, "global_position", discard_pile.global_position, 0.25)
+	tween.tween_property(card, "scale", Vector2(0.35, 0.35), 0.5)
 	_update_hand_position()

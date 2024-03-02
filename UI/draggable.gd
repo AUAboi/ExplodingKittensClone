@@ -6,7 +6,6 @@ class_name Draggable
 
 var draggable := false
 var is_inside_droppable := false
-var body_ref: Droppable
 var offset: Vector2
 
 var start_position: Vector2
@@ -39,7 +38,6 @@ func on_mouse_exited() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	is_inside_droppable = true
 	body.modulate = Color(Color.REBECCA_PURPLE, 1)
-	body_ref = body
 
 func _on_body_exited(body: Node2D) -> void:
 	is_inside_droppable = false
