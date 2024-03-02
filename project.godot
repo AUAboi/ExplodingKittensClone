@@ -29,6 +29,11 @@ gdscript/warnings/untyped_declaration=2
 
 window/stretch/mode="canvas_items"
 
+[editor]
+
+version_control/plugin_name="GitPlugin"
+version_control/autoload_on_startup=true
+
 [input]
 
 click={
