@@ -2,6 +2,9 @@ extends Node
 
 class_name GameManager
 
+@export var player: Player
+@export var enemy: Player
+
 func _ready() -> void:
 	EventBus.exploding_drawn.connect(_on_exploding_drawn)
 
