@@ -38,7 +38,11 @@ func on_mouse_exited() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	is_inside_droppable = true
 	body.modulate = Color(Color.REBECCA_PURPLE, 1)
+	var tween := get_tree().create_tween()
+	tween.tween_property(actor, "scale", Vector2(0.75, 0.75), 0.1)
 
 func _on_body_exited(body: Node2D) -> void:
 	is_inside_droppable = false
 	body.modulate = Color(Color.REBECCA_PURPLE, 0.7)
+	var tween := get_tree().create_tween()
+	tween.tween_property(actor, "scale", Vector2(0.5, 0.5), 0.1)

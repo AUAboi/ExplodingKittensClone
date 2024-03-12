@@ -176,7 +176,14 @@ func _on_card_discarded(card: Card) -> void:
 	card.hoverable = false
 	card.reparent(discard_pile)
 	player_hand.erase(card)
+	
+	#Random degree between -20 and 20
+	var random_rotation_offset := deg_to_rad(randi() % 41 - 20) 
+
+	
 	var tween := get_tree().create_tween().set_parallel(true)  
 	tween.tween_property(card, "global_position", discard_pile.global_position, 0.25)
-	tween.tween_property(card, "scale", Vector2(0.35, 0.35), 0.5)
+	tween.tween_property(card, "scale", Vector2(0.35, 0.35), 0.35)
+	tween.tween_property(card, "rotation", random_rotation_offset, 0.25)
+	
 	_update_hand_position()
