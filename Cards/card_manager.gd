@@ -4,9 +4,11 @@ class_name CardManager
 
 var base_card_scene: PackedScene = preload("res://Cards/base_card.tscn")
 var deck_list: Array[Card]
-var player_hand: Array[Card]
+var player_hand_list: Array[Card]
 
-@export var hand: Node2D
+@export var player_hand: Node2D
+@export var enemy_hand: Node2D
+
 @export var deck: Node2D
 @export var discard_pile: Control
 
@@ -64,8 +66,8 @@ func _load_card_effect(card: Card) -> void:
 
 func _deck_ratio_calc(card:Card) -> float:
 	var deck_ratio := 0.50
-	if hand.get_child_count() > 1:
-		deck_ratio = float(card.get_index()) / float(hand.get_child_count() - 1.0)
+	if player_hand.get_child_count() > 1:
+		deck_ratio = float(card.get_index()) / float(player_hand.get_child_count() - 1.0)
 	
 	return deck_ratio
 
@@ -75,13 +77,13 @@ func draw_card() -> void:
 		card.card_hovered.connect(_on_card_hover)
 		card.card_unhovered.connect(_on_card_unhovered)
 		card.card_discarded.connect(_on_card_discarded)
-		player_hand.append(card)
-		card.reparent(hand)
+		player_hand_list.append(card)
+		card.reparent(player_hand)
 		_update_hand_position()
 		card.draw()
 
 func _update_hand_position() -> void:
-	var current_hand_size := player_hand.size()
+	var current_hand_size := player_hand_list.size()
 	var viewport_size := get_viewport_rect().size
 	var horizontal_space := viewport_size.x  - SCREEN_EDGE_BORDER - SCREEN_EDGE_BORDER - CARD_SIZE.x
 	var dist_between_cards: float = min(horizontal_space / current_hand_size, MAX_DIST_BETWEEN_HAND_CARDS * 2)
@@ -93,10 +95,10 @@ func _update_hand_position() -> void:
 	if current_hand_size >= 4 && current_hand_size <= 6:
 		separation = 0.2
 
-	for card in hand.get_children():
+	for card in player_hand.get_children():
 		card.hoverable = false
 		
-		var destination := hand.global_position
+		var destination := player_hand.global_position
 		var hand_ratio := _deck_ratio_calc(card)
 		
 		destination.x += card_x * SPREAD_CURVE.sample(hand_ratio) * separation
@@ -121,7 +123,7 @@ func _on_card_hover(card: Card) -> void:
 	#Get 2 cards before and 2 cards after hovered card for effect
 	var card_index := card.get_index()
 	
-	var cards_in_hand := hand.get_children()
+	var cards_in_hand := player_hand.get_children()
 	
 	var card_before_index_start: int = max(0, card_index - 2)
 	var card_before_index_end: int =  min(card_index - 1, cards_in_hand.size() - 1)
@@ -154,7 +156,7 @@ func _on_card_unhovered(card: Card) -> void:
 	#Get 2 cards before and 2 cards after hovered card for effect
 	var card_index := card.get_index()
 	
-	var cards_in_hand := hand.get_children()
+	var cards_in_hand := player_hand.get_children()
 	
 	var card_before_index_start: int = max(0, card_index - 2)
 	var card_before_index_end: int =  min(card_index - 1, cards_in_hand.size() - 1)
@@ -175,11 +177,10 @@ func _on_card_unhovered(card: Card) -> void:
 func _on_card_discarded(card: Card) -> void:
 	card.hoverable = false
 	card.reparent(discard_pile)
-	player_hand.erase(card)
+	player_hand_list.erase(card)
 	
 	#Random degree between -20 and 20
 	var random_rotation_offset := deg_to_rad(randi() % 41 - 20) 
-
 	
 	var tween := get_tree().create_tween().set_parallel(true)  
 	tween.tween_property(card, "global_position", discard_pile.global_position, 0.25)

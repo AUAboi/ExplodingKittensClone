@@ -4,8 +4,8 @@ class_name CardEffect
 
 @export var actor: Card
 
-func draw(player: Player) -> void: 
+func draw(_player: Player) -> void: 
 	pass
 
-func play(player: Player, target: Player) -> void:
+func play(_player: Player, _target: Player) -> void:
 	pass

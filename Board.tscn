@@ -36,12 +36,12 @@ position = Vector2(64, 64)
 position = Vector2(16, 12)
 shape = SubResource("RectangleShape2D_ko76q")
 
-[node name="Hand" type="Node2D" parent="."]
+[node name="PlayerHand" type="Node2D" parent="."]
 position = Vector2(576, 576)
 
-[node name="CardManager" type="Node2D" parent="." node_paths=PackedStringArray("hand", "deck", "discard_pile")]
+[node name="CardManager" type="Node2D" parent="." node_paths=PackedStringArray("player_hand", "deck", "discard_pile")]
 script = ExtResource("2_44kgi")
-hand = NodePath("../Hand")
+player_hand = NodePath("../PlayerHand")
 deck = NodePath("../Deck")
 discard_pile = NodePath("../DiscardPile")
 
@@ -85,6 +85,9 @@ position = Vector2(72, 568)
 
 [node name="Enemy" parent="." instance=ExtResource("6_ayhiw")]
 position = Vector2(1064, 72)
+
+[node name="EnemyHand" type="Node2D" parent="."]
+position = Vector2(568, 8)
 
 [connection signal="input_event" from="Deck" to="." method="_on_deck_input_event"]
 

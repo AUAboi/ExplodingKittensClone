@@ -20,8 +20,7 @@ func _ready() -> void:
 	flavor_text_label.text = actor.card_stats.flavor_text
 	
 	set_card_styles()
-	
-	
+
 
 func _get_card_title() -> String:
 	match actor.card_stats.type:
